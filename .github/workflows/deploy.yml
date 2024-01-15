@@ -1,0 +1,38 @@
+name: Github Action
+
+on:
+  workflow_dispatch:
+
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker Build Image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+          -t ${{ secrets.DOCKER_ACR_URL }}/${{ secrets.ACR_NAMESPACE }}/certbot-aliyun-dns:latest \
+          -t ${{ secrets.DOCKER_ACR_URL }}/${{ secrets.ACR_NAMESPACE }}/certbot-aliyun-dns:$IMAGE_TAG - << EOF
+          FROM certbot/certbot
+
+          RUN wget https://github.com/aliyun/aliyun-cli/releases/download/v3.0.196/aliyun-cli-linux-3.0.196-amd64.tgz \
+              && tar -xzvf aliyun-cli-linux-3.0.196-amd64.tgz \
+              && rm -rf aliyun-cli-linux-3.0.196-amd64.tgz \
+              && mv aliyun /usr/local/bin \
+              && echo "安装版本："aliyun version
+          EOF
+      - name: Login to Aliyun Container Registry (ACR)
+        uses: aliyun/acr-login@v1 # 使用阿里云镜像服务action
+        with:
+          login-server: ${{ secrets.DOCKER_ACR_URL }} # 务必正确填写镜像容器服务的登录地址
+          region-id: cn-shanghai # 务必正确填写镜像容器服务的登录地址
+          username: "${{ secrets.DOCKER_ACR_USERNAME }}" # 引用GitHub repo设置的镜像容器服务用户名
+          password: "${{ secrets.DOCKER_ACR_PASSWORD }}" # 引用GitHub repo设置的镜像容器服务密码
+      - name: Push images to Aliyun
+        run: |
+          docker images | grep -E ${{ secrets.DOCKER_ACR_URL }} | awk '{print "docker push "$1":"$2}' | sh
