@@ -24,7 +24,7 @@ jobs:
               && tar -xzvf aliyun-cli-linux-3.0.196-amd64.tgz \
               && rm -rf aliyun-cli-linux-3.0.196-amd64.tgz \
               && mv aliyun /usr/local/bin \
-              && echo "安装版本："aliyun version
+              && aliyun version
           EOF
       - name: Login to Aliyun Container Registry (ACR)
         uses: aliyun/acr-login@v1 # 使用阿里云镜像服务action
