@@ -20,9 +20,9 @@ jobs:
           -t ${{ secrets.DOCKER_ACR_URL }}/${{ secrets.ACR_NAMESPACE }}/certbot-aliyun-dns:$IMAGE_TAG - << EOF
           FROM certbot/certbot
 
-          RUN wget https://github.com/aliyun/aliyun-cli/releases/download/v3.0.196/aliyun-cli-linux-3.0.196-amd64.tgz \
-              && tar -xzvf aliyun-cli-linux-3.0.196-amd64.tgz \
-              && rm -rf aliyun-cli-linux-3.0.196-amd64.tgz \
+          RUN wget https://github.com/aliyun/aliyun-cli/releases/download/v3.0.198/aliyun-cli-linux-3.0.198-amd64.tgz \
+              && tar -xzvf aliyun-cli-linux-3.0.198-amd64.tgz \
+              && rm -rf aliyun-cli-linux-3.0.198-amd64.tgz \
               && mv aliyun /usr/local/bin \
               && aliyun version
           EOF
